@@ -1,0 +1,120 @@
+#!/bin/bash
+CYAN='\033[0;36m'
+RED='\033[0;31m'
+NORMAL='\033[0m'
+BLUE='\033[0;34m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+GRAY='\033[1;30'
+NC='\033[0m'
+LYELLOW='\033[1;33m'
+LBLUE='\033[1;34m'
+LPURPLE='\033[0;35m'
+LRED='\033[1;31m'
+LGREEN='\033[1;32m'
+SETTINGS_FILE='settings.sh'
+
+version=0.1
+
+main () {
+
+    source btclogo.sh
+    printf "${YELLOW}${logo}\n"
+    printf "${YELLOW}Bitcoin ${LGREEN}Gnome${NC}\n"
+    printf "${LPURPLE}Checking if settings.sh exists..."
+    if [ -f $SETTINGS_FILE ]; then
+        printf "${GREEN} Settings file found.\n"
+    else
+        printf "${RED} Settings files not found.\n"
+        create_settings
+    fi
+    printf "${LBLUE}Start logging the price of BTC by typing 'start' below:${NC}\n"
+    read option
+    case $option in
+
+        start | -start | -s | s)
+            watcher_start
+        ;;
+
+        help | -help | -h | h)
+            help_info
+        ;;
+
+        version | -version | -v | v)
+            version_info
+        ;;
+
+    *)
+        printf "Command not found. Use command -help for assistance.${NC}\n"
+    esac
+    
+}
+
+create_settings () {
+
+    printf "${GREEN}Creating a settings.sh file....\n"
+    touch settings.sh
+    printf "This file can be modified to configure time between updates and currency.\n"
+    printf "${RED}Note: Currency must be typed correctly and in acronymed format e.g (${GREEN}USD, ${BLUE}GBP, ${YELLOW}EUR${RED})${NC}\n"
+    printf "${BLUE}Writing on settings.sh...\n"
+    echo "#!/bin/bash" >> "$SETTINGS_FILE"
+    printf "${NC}Please type below the amount of seconds you would like between updates.\n"
+    read seconds
+    if [[ "$seconds" =~ ^[0-9]+$ ]]; then
+        echo "UPDATE_TIME=$seconds" >> "$SETTINGS_FILE"
+    else
+        printf $"{RED}ERROR: Must be a positive integer.\n"
+        exit 1
+    fi
+    printf "${NC}Please type below the currency you would like to conver to. (USD, GBP, EUR, AUD)\n"
+    read currency_choice
+    if [[ "$currency_choice" =~ ^[[:alpha:]]+$ ]]; then
+        echo "CURRENCY=$currency_choice" >> "$SETTINGS_FILE"
+    else
+        printf $"{RED}ERROR: Must be a string.\n"
+        exit 1
+    fi
+
+}
+
+version_info () {
+
+    printf "${LYELLOW}Current version: ${LGREEN}${version}\n"
+
+
+}
+
+help_info () {
+
+	printf "${LPURPLE}
+	
+	Options:
+
+	-v, version
+	   Check current version of BTC-Tracker
+	-h, help
+	   Show current help message
+   	-s, start
+	   Start logging Crypto-currency values"
+}
+
+watcher_start () {
+    if [ ! -f $SETTINGS_FILE ]; then
+        printf "${RED} Settings file not found. Exiting...\n"
+        exit 1
+    fi
+
+    source settings.sh
+    printf "${GREEN}Current update speed is ${YELLOW}${UPDATE_TIME} second(s).\n"
+    printf "${GREEN}Current currency is ${YELLOW}${CURRENCY}.\n"
+    while sleep $UPDATE_TIME ; 
+    do
+        curl -s "https://www.google.com/finance/quote/BTC-${CURRENCY}" -o webpage.html
+        btc_value=$(grep -oP '(?<=<div class="YMlKec fxKbKc">)[^<]+(?=<\/div>)' webpage.html)
+        btc_date=$(date +"%d-%m-%y %I:%m:%S")
+        printf "${CYAN}Current BTC value is: ${btc_value} ${CURRENCY} ${NC}\n"
+        printf "${GREEN}${btc_date}${NC}\n"
+    done
+}   
+
+main
