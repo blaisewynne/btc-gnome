@@ -13,8 +13,9 @@ LPURPLE='\033[0;35m'
 LRED='\033[1;31m'
 LGREEN='\033[1;32m'
 SETTINGS_FILE='settings.sh'
+OS_NAME=$(uname -s)
 
-version=0.1
+version=0.2
 
 main () {
 
@@ -79,15 +80,13 @@ create_settings () {
 
 version_info () {
 
-    printf "${LYELLOW}Current version: ${LGREEN}${version}\n"
-
+    echo "${LYELLOW}Current version: ${LGREEN}${version}\n"
 
 }
 
 help_info () {
 
 	printf "${LPURPLE}
-	
 	Options:
 
 	-v, version
@@ -98,19 +97,38 @@ help_info () {
 	   Start logging Crypto-currency values"
 }
 
+watcher_config () {
+
+
+    case $OS_NAME in
+
+    Darwin)
+        btc_value="$(ggrep -oP '(?<=<div class="YMlKec fxKbKc">)[^<]+(?=<\/div>)' webpage.html)"
+        printf "${LBLUE}You are on ${LRED}MacOS\n"
+    ;;
+    
+
+
+    *) 
+        btc_value="$(grep -oP '(?<=<div class="YMlKec fxKbKc">)[^<]+(?=<\/div>)' webpage.html)"
+    esac
+
+
+}
+
 watcher_start () {
     if [ ! -f $SETTINGS_FILE ]; then
         printf "${RED} Settings file not found. Exiting...\n"
         exit 1
     fi
-
+    watcher_config
     source settings.sh
     printf "${GREEN}Current update speed is ${YELLOW}${UPDATE_TIME} second(s).\n"
     printf "${GREEN}Current currency is ${YELLOW}${CURRENCY}.\n"
     while sleep $UPDATE_TIME ; 
     do
         curl -s "https://www.google.com/finance/quote/BTC-${CURRENCY}" -o webpage.html
-        btc_value=$(ggrep -oP '(?<=<div class="YMlKec fxKbKc">)[^<]+(?=<\/div>)' webpage.html)
+        eval={$btc_value}
         btc_date=$(date +"%d-%m-%y %I:%M:%S")
         printf "${CYAN}Current BTC value is: ${btc_value} ${CURRENCY} ${NC}\n"
         printf "${GREEN}${btc_date}${NC}\n"
