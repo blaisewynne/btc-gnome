@@ -111,6 +111,12 @@ watcher_config () {
         btc_value="$(grep -oP '(?<=<div class="YMlKec fxKbKc">)[^<]+(?=<\/div>)' webpage.html)"
         printf "${LBLUE}You are on ${LRED}Linux\n"
     ;;
+
+    CYGWIN*|MSYS*|MINGW*)
+       btc_value="$(grep -oP '(?<=<div class="YMlKec fxKbKc">)[^<]+(?=<\/div>)' webpage.html)"
+       printf "${LBLUE}You are on ${LRED}Windows\n"
+    ;;
+    
     *) 
         btc_value="$(grep -oP '(?<=<div class="YMlKec fxKbKc">)[^<]+(?=<\/div>)' webpage.html)"
     esac
