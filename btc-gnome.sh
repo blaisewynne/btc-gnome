@@ -107,8 +107,10 @@ watcher_config () {
         printf "${LBLUE}You are on ${LRED}MacOS\n"
     ;;
     
-
-
+    Linux)
+        btc_value="$(grep -oP '(?<=<div class="YMlKec fxKbKc">)[^<]+(?=<\/div>)' webpage.html)"
+        printf "${LBLUE}You are on ${LRED}Linux\n"
+    ;;
     *) 
         btc_value="$(grep -oP '(?<=<div class="YMlKec fxKbKc">)[^<]+(?=<\/div>)' webpage.html)"
     esac
