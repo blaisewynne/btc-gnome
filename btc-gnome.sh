@@ -110,7 +110,7 @@ watcher_start () {
     while sleep $UPDATE_TIME ; 
     do
         curl -s "https://www.google.com/finance/quote/BTC-${CURRENCY}" -o webpage.html
-        btc_value=$(grep -oP '(?<=<div class="YMlKec fxKbKc">)[^<]+(?=<\/div>)' webpage.html)
+        btc_value=$(ggrep -oP '(?<=<div class="YMlKec fxKbKc">)[^<]+(?=<\/div>)' webpage.html)
         btc_date=$(date +"%d-%m-%y %I:%M:%S")
         printf "${CYAN}Current BTC value is: ${btc_value} ${CURRENCY} ${NC}\n"
         printf "${GREEN}${btc_date}${NC}\n"
