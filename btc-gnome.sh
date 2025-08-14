@@ -15,7 +15,7 @@ LGREEN='\033[1;32m'
 SETTINGS_FILE='settings.sh'
 OS_NAME=$(uname -s)
 
-version=0.2
+version=0.
 
 main () {
 
@@ -111,18 +111,17 @@ watcher_config () {
     ;;
     
     Linux)
-        btc_value=$(grep -oP '(?<=<div class="YMlKec fxKbKc">)[^<]+(?=<\/div>)' webpage.html)
+        btc_value="$(grep -oP '(?<=<div class="YMlKec fxKbKc">)[^<]+(?=<\/div>)' webpage.html)"
         printf "${LBLUE}You are on ${LRED}Linux\n"
     ;;
 
     CYGWIN*|MSYS*|MINGW*)
        btc_value="$(grep -oP '(?<=<div class="YMlKec fxKbKc">)[^<]+(?=<\/div>)' webpage.html)"
-       printf "${LBLUE}You are on ${LRED}Windows :(\n"
+       printf "${LBLUE}You are on ${LRED}Windows\n"
     ;;
     
     *) 
         btc_value="$(grep -oP '(?<=<div class="YMlKec fxKbKc">)[^<]+(?=<\/div>)' webpage.html)"
-        printf "${LBLUE}No idea what ${LRED}you are on?\n"
     esac
 
 
