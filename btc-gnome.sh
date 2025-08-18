@@ -15,7 +15,7 @@ LGREEN='\033[1;32m'
 SETTINGS_FILE='settings.sh'
 OS_NAME=$(uname -s)
 
-version=0.
+version=0.2
 
 main () {
 
