@@ -44,7 +44,6 @@ main () {
         version | -version | -v | v)
             version_info
         ;;
-
     *)
         printf "Command not found. Use command -help for assistance.${NC}\n"
     esac
@@ -86,6 +85,7 @@ version_info () {
     echo "${LYELLOW}Current version: ${LGREEN}${version}\n"
 
 }
+
 
 help_info () {
 
@@ -139,10 +139,9 @@ watcher_start () {
     while sleep $UPDATE_TIME ; 
     do
         curl -s "https://www.google.com/finance/quote/BTC-${CURRENCY}" -o webpage.html
-        eval={$btc_value}
-        btc_date=$(date +"%d-%m-%y %I:%M:%S")
-        echo -ne "${CYAN}Current BTC value is: ${btc_value} ${CURRENCY}${NC} | Current Time is: ${GREEN}${btc_date}${NC}\r"
-        echo "$btc_value, $btc_date" >> "data.txt"
+        btc_value=$(ggrep -oP '(?<=<div class="YMlKec fxKbKc">)[^<]+(?=<\/div>)' webpage.html)
+        btc_date=$(date +"%d-%m-%y %I:%m:%S")
+        echo -ne " ${CYAN}Current BTC value is: ${YELLOW}${btc_value} ${CYAN}${CURRENCY}${NC} | ${GREEN}Current Time: ${btc_date}${NC}\r"
     done
 }   
 
