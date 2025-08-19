@@ -120,6 +120,7 @@ watcher_config () {
         btc_value=$(ggrep -oP '(?<=<div class="YMlKec fxKbKc">)[^<]+(?=<\/div>)' webpage.html)
         btc_date=$(date +"%d-%m-%y %I:%m:%S")
         echo -ne " ${CYAN}Current BTC value is: ${YELLOW}${btc_value} ${CYAN}${CURRENCY}${NC} | ${GREEN}Current Time: ${btc_date}${NC}\r"
+        echo "${btc_value}, ${btc_date}" >> data.txt
     done
     ;;
     
@@ -138,12 +139,27 @@ watcher_config () {
         btc_value=$(grep -oP '(?<=<div class="YMlKec fxKbKc">)[^<]+(?=<\/div>)' webpage.html)
         btc_date=$(date +"%d-%m-%y %I:%m:%S")
         echo -ne " ${CYAN}Current BTC value is: ${YELLOW}${btc_value} ${CYAN}${CURRENCY}${NC} | ${GREEN}Current Time: ${btc_date}${NC}\r"
+        echo "${btc_value}, ${btc_date}" >> data.txt
     done
     ;;
 
     CYGWIN*|MSYS*|MINGW*)
-       btc_value="$(grep -oP '(?<=<div class="YMlKec fxKbKc">)[^<]+(?=<\/div>)' webpage.html)"
-       printf "${LBLUE}You are on ${LRED}Windows\n"
+       if [ ! -f $SETTINGS_FILE ]; then
+        printf "${RED} Settings file not found. Exiting...\n"
+        exit 1
+    fi
+        source settings.sh
+        printf "${LBLUE}You are on ${LRED}MacOS\n"
+        printf "${GREEN}Current update speed is ${YELLOW}${UPDATE_TIME} second(s).\n"
+        printf "${GREEN}Current currency is ${YELLOW}${CURRENCY}.\n"
+        while sleep $UPDATE_TIME ; 
+    do
+        curl -s "https://www.google.com/finance/quote/BTC-${CURRENCY}" -o webpage.html
+        btc_value=$(ggrep -oP '(?<=<div class="YMlKec fxKbKc">)[^<]+(?=<\/div>)' webpage.html)
+        btc_date=$(date +"%d-%m-%y %I:%m:%S")
+        echo -ne " ${CYAN}Current BTC value is: ${YELLOW}${btc_value} ${CYAN}${CURRENCY}${NC} | ${GREEN}Current Time: ${btc_date}${NC}\r"
+        echo "${btc_value}, ${btc_date}" >> data.txt
+    done
     ;;
     
     *) 
